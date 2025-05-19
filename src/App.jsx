@@ -1,10 +1,50 @@
-export default function App() {
+import { Route, Routes } from "react-router-dom"
+import Navbar from "./components/Navbar"
+import Sidebar from "./components/Sidebar"
+import Add from './pages/Add';
+import List from './pages/List';
+import Orders from "./pages/Orders";
+import { useEffect, useState } from "react";
+import Login from "./components/Login";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
+
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+export const currency = '$'
+
+const App = () => {
+
+  const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
+
+  useEffect(() => {
+    localStorage.setItem('token', token)
+  }, [token])
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-blue-500 text-white px-6 py-4 rounded-lg shadow-lg text-center">
-        <h1 className="text-2xl font-bold mb-2">Tailwind CSS is Working! 🚀</h1>
-        <p className="text-sm">If you can see this styled box, you're good to go!</p>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <ToastContainer />
+      {token === ""
+        ? <Login setToken={setToken} />
+        : <>
+          <Navbar setToken={setToken} />
+          <hr />
+          <div className="flex w-full">
+            <Sidebar />
+            <div className="w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base">
+              <Routes>
+                <Route path="/add" element={<Add token={token} />} />
+                <Route path="/list" element={<List token={token} />} />
+                <Route path="/orders" element={<Orders token={token} />} />
+              </Routes>
+            </div>
+          </div>
+        </>
+      }
+
+
     </div>
-  );
+  )
 }
+
+export default App
